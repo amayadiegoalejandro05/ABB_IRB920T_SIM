@@ -1,0 +1,17 @@
+# ============================================================
+# ABB IRB 920T-6/0.65 - Dependencias Python
+# ============================================================
+#
+# Método recomendado:
+#     conda env create -f environment.yml
+#
+# Este archivo se mantiene como alternativa para sistemas
+# donde PyBullet tenga un wheel compatible con pip.
+#
+# En Windows se recomienda utilizar Conda debido a que pip
+# puede intentar compilar PyBullet desde código fuente.
+# ============================================================
+
+numpy>=1.24,<3
+matplotlib>=3.7,<4
+pybullet>=3.2.6,<4

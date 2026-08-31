@@ -1,0 +1,217 @@
+<?xml version="1.0"?>
+<robot name="abb_irb920t_6_065_kinematic_model">
+
+  <!--
+    Kinematic teaching model of ABB IRB 920T-6/0.65.
+    The joint limits and principal planar dimensions are based on ABB public specifications.
+    Visual link shapes, masses and inertias are simplified because this is not ABB CAD data.
+
+    Kinematic chain: R-R-P-R
+      J1: +/-150 deg
+      J2: +/-145 deg
+      J3: -0.180..0 m (switchable to 0.300 m in the Python file + URDF limit)
+      J4: +/-400 deg
+
+    Planar dimensions used:
+      shoulder -> elbow  D = 0.260 m
+      elbow -> wrist     C = 0.390 m
+      max reach          B = 0.650 m
+  -->
+
+  <material name="abb_orange">
+    <color rgba="1.0 0.45 0.05 1.0"/>
+  </material>
+  <material name="dark_gray">
+    <color rgba="0.12 0.12 0.12 1.0"/>
+  </material>
+  <material name="metal">
+    <color rgba="0.68 0.70 0.72 1.0"/>
+  </material>
+
+  <!-- BASE: public footprint is 170 x 193 mm. Height is simplified. -->
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 0.055" rpy="0 0 0"/>
+      <geometry><box size="0.170 0.193 0.110"/></geometry>
+      <material name="dark_gray"/>
+    </visual>
+    <visual>
+      <origin xyz="0 0 0.200" rpy="0 0 0"/>
+      <geometry><cylinder radius="0.075" length="0.290"/></geometry>
+      <material name="abb_orange"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.055" rpy="0 0 0"/>
+      <geometry><box size="0.170 0.193 0.110"/></geometry>
+    </collision>
+    <collision>
+      <origin xyz="0 0 0.200" rpy="0 0 0"/>
+      <geometry><cylinder radius="0.075" length="0.290"/></geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0.12"/>
+      <mass value="8.0"/>
+      <inertia ixx="0.050" ixy="0" ixz="0" iyy="0.050" iyz="0" izz="0.030"/>
+    </inertial>
+  </link>
+
+  <!-- AXIS 1 -->
+  <joint name="axis_1" type="revolute">
+    <parent link="base_link"/>
+    <child link="link_1"/>
+    <origin xyz="0 0 0.345" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-2.617993878" upper="2.617993878" effort="300" velocity="6.911503838"/>
+    <dynamics damping="0.06" friction="0.02"/>
+  </joint>
+
+  <!-- LINK 1: D = 260 mm -->
+  <link name="link_1">
+    <visual>
+      <origin xyz="0.130 0 0" rpy="0 0 0"/>
+      <geometry><box size="0.260 0.095 0.070"/></geometry>
+      <material name="abb_orange"/>
+    </visual>
+    <visual>
+      <origin xyz="0 0 0"/>
+      <geometry><cylinder radius="0.063" length="0.085"/></geometry>
+      <material name="dark_gray"/>
+    </visual>
+    <collision>
+      <origin xyz="0.130 0 0"/>
+      <geometry><box size="0.250 0.080 0.060"/></geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0.130 0 0"/>
+      <mass value="4.0"/>
+      <inertia ixx="0.010" ixy="0" ixz="0" iyy="0.030" iyz="0" izz="0.030"/>
+    </inertial>
+  </link>
+
+  <!-- AXIS 2 -->
+  <joint name="axis_2" type="revolute">
+    <parent link="link_1"/>
+    <child link="link_2"/>
+    <origin xyz="0.260 0 0" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-2.530727415" upper="2.530727415" effort="220" velocity="13.613568166"/>
+    <dynamics damping="0.05" friction="0.02"/>
+  </joint>
+
+  <!-- LINK 2: C = 390 mm -->
+  <link name="link_2">
+    <visual>
+      <origin xyz="0.195 0 -0.006" rpy="0 0 0"/>
+      <geometry><box size="0.390 0.078 0.060"/></geometry>
+      <material name="abb_orange"/>
+    </visual>
+    <visual>
+      <origin xyz="0 0 0"/>
+      <geometry><cylinder radius="0.055" length="0.075"/></geometry>
+      <material name="dark_gray"/>
+    </visual>
+    <collision>
+      <origin xyz="0.195 0 -0.006"/>
+      <geometry><box size="0.380 0.066 0.050"/></geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0.195 0 0"/>
+      <mass value="3.0"/>
+      <inertia ixx="0.008" ixy="0" ixz="0" iyy="0.045" iyz="0" izz="0.045"/>
+    </inertial>
+  </link>
+
+  <!-- AXIS 3: vertical prismatic spindle. Lower is -300 mm so the same URDF can model either option. -->
+  <joint name="axis_3" type="prismatic">
+    <parent link="link_2"/>
+    <child link="z_spindle"/>
+    <origin xyz="0.390 0 0" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-0.300" upper="0.0" effort="600" velocity="1.2"/>
+    <dynamics damping="1.0" friction="0.2"/>
+  </joint>
+
+  <link name="z_spindle">
+    <visual>
+      <origin xyz="0 0 -0.060"/>
+      <geometry><cylinder radius="0.022" length="0.120"/></geometry>
+      <material name="metal"/>
+    </visual>
+    <visual>
+      <origin xyz="0 0 0"/>
+      <geometry><cylinder radius="0.050" length="0.065"/></geometry>
+      <material name="dark_gray"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 -0.060"/>
+      <geometry><cylinder radius="0.022" length="0.120"/></geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 -0.050"/>
+      <mass value="1.5"/>
+      <inertia ixx="0.004" ixy="0" ixz="0" iyy="0.004" iyz="0" izz="0.001"/>
+    </inertial>
+  </link>
+
+  <!-- AXIS 4 -->
+  <joint name="axis_4" type="revolute">
+    <parent link="z_spindle"/>
+    <child link="wrist"/>
+    <origin xyz="0 0 -0.120" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-6.981317008" upper="6.981317008" effort="90" velocity="43.633231300"/>
+    <dynamics damping="0.02" friction="0.01"/>
+  </joint>
+
+  <link name="wrist">
+    <visual>
+      <origin xyz="0 0 -0.018"/>
+      <geometry><cylinder radius="0.034" length="0.036"/></geometry>
+      <material name="dark_gray"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 -0.018"/>
+      <geometry><cylinder radius="0.032" length="0.036"/></geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 -0.018"/>
+      <mass value="0.6"/>
+      <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+    </inertial>
+  </link>
+
+  <!-- Simple teaching gripper; visual only, not an ABB production tool. -->
+  <joint name="tool_fixed" type="fixed">
+    <parent link="wrist"/>
+    <child link="tool"/>
+    <origin xyz="0 0 -0.055" rpy="0 0 0"/>
+  </joint>
+
+  <link name="tool">
+    <visual>
+      <origin xyz="0 0 0"/>
+      <geometry><box size="0.060 0.050 0.040"/></geometry>
+      <material name="metal"/>
+    </visual>
+    <visual>
+      <origin xyz="0.018 0 -0.048"/>
+      <geometry><box size="0.012 0.018 0.060"/></geometry>
+      <material name="dark_gray"/>
+    </visual>
+    <visual>
+      <origin xyz="-0.018 0 -0.048"/>
+      <geometry><box size="0.012 0.018 0.060"/></geometry>
+      <material name="dark_gray"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0"/>
+      <geometry><box size="0.060 0.050 0.040"/></geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0"/>
+      <mass value="0.3"/>
+      <inertia ixx="0.0005" ixy="0" ixz="0" iyy="0.0005" iyz="0" izz="0.0005"/>
+    </inertial>
+  </link>
+
+</robot>
